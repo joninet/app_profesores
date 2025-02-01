@@ -27,10 +27,10 @@ def crear_colegio(request):
             if form.is_valid():
                 new_colegio = form.save(commit=False)
                 new_colegio.user = request.user
-                new_colegio.save()
-                # Después de guardar el colegio, agregamos el año lectivo
+                # Asignar el año lectivo antes de guardar
                 if ano_lectivo_id:
-                    new_colegio.anolectivo.add(ano_lectivo_id)
+                    new_colegio.ano_lectivo_id = ano_lectivo_id
+                new_colegio.save()
                 return redirect('colegio')
             
         except ValueError:
