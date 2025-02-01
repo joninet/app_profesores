@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-width: 260px;
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 20px;
+            background-color: #1a1c23;
+            color: white;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-content {
+            flex: 1; /* Ocupa el espacio restante */
+            overflow-y: auto; /* Scroll solo para el menú */
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+        }
+
+        .nav-link {
+            color: #a0aec0;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .nav-link:hover {
+            background-color: #2d3748;
+            color: white;
+        }
+
+        .nav-link.active {
+            background-color: #3182ce;
+            color: white;
+        }
+
+        .user-profile {
+            padding: 20px;
+            background-color: #1a1c23;
+            border-top: 1px solid #2d3748;
+        }
+
+        .user-profile .logout-btn {
+            width: 100%;
+            margin-top: 10px;
+            background-color: #2d3748;
+            border: none;
+            color: #a0aec0;
+            transition: all 0.3s;
+        }
+        .login-btn {
+            width: 100%;
+            margin-top: 10px;
+            background-color: #2d3748;
+            border: none;
+            color: #a0aec0;
+            transition: all 0.3s;
+        }
+
+        .user-profile .logout-btn:hover {
+            background-color: #e53e3e;
+            color: white;
+        }
+
+        .login-btn:hover {
+            background-color: #2857b5;
+            color: white;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                margin-left: calc(-1 * var(--sidebar-width));
+            }
+
+            .sidebar.active {
+                margin-left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+
+        .user-icon {
+            font-size: 2.5rem;
+            color: #a0aec0;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    {% include '_navbar.html' %}
+    
+    {% block content %}
+    {% endblock %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

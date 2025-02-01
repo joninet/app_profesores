@@ -1,0 +1,150 @@
+{% extends 'base.html' %} {% block content %}
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="container-fluid">
+      <!-- Page Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+          <h1>Dashboard</h1>
+          <button class="btn btn-primary d-md-none" id="sidebarToggle">
+              <i class="fas fa-bars"></i>
+          </button>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="row g-4 mb-4">
+          <div class="col-12 col-md-6 col-lg-3">
+              <div class="stat-card p-3">
+                  <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                          <h6 class="text-muted mb-2">Total Alumnos</h6>
+                          <h3 class="mb-0">1,234</h3>
+                      </div>
+                      <div class="bg-primary bg-opacity-10 p-3 rounded">
+                          <i class="fas fa-users text-primary fa-2x"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <div class="col-12 col-md-6 col-lg-3">
+              <div class="stat-card p-3">
+                  <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                          <h6 class="text-muted mb-2">Total Profesores</h6>
+                          <h3 class="mb-0">56</h3>
+                      </div>
+                      <div class="bg-success bg-opacity-10 p-3 rounded">
+                          <i class="fas fa-chalkboard-teacher text-success fa-2x"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <div class="col-12 col-md-6 col-lg-3">
+              <div class="stat-card p-3">
+                  <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                          <h6 class="text-muted mb-2">Total Materias</h6>
+                          <h3 class="mb-0">32</h3>
+                      </div>
+                      <div class="bg-warning bg-opacity-10 p-3 rounded">
+                          <i class="fas fa-book text-warning fa-2x"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <div class="col-12 col-md-6 col-lg-3">
+              <div class="stat-card p-3">
+                  <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                          <h6 class="text-muted mb-2">Cursos Activos</h6>
+                          <h3 class="mb-0">15</h3>
+                      </div>
+                      <div class="bg-info bg-opacity-10 p-3 rounded">
+                          <i class="fas fa-graduation-cap text-info fa-2x"></i>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="row">
+          <div class="col-12 col-lg-8 mb-4">
+              <div class="card">
+                  <div class="card-header">
+                      <h5 class="card-title mb-0">Actividad Reciente</h5>
+                  </div>
+                  <div class="card-body">
+                      <div class="list-group list-group-flush">
+                          <div class="list-group-item">
+                              <div class="d-flex align-items-center">
+                                  <i class="fas fa-user-plus me-3 text-primary"></i>
+                                  <div>
+                                      <p class="mb-0">Nuevo alumno registrado</p>
+                                      <small class="text-muted">Hace 2 horas</small>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="list-group-item">
+                              <div class="d-flex align-items-center">
+                                  <i class="fas fa-book-open me-3 text-success"></i>
+                                  <div>
+                                      <p class="mb-0">Nueva materia agregada</p>
+                                      <small class="text-muted">Hace 4 horas</small>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="list-group-item">
+                              <div class="d-flex align-items-center">
+                                  <i class="fas fa-edit me-3 text-warning"></i>
+                                  <div>
+                                      <p class="mb-0">Actualización de notas</p>
+                                      <small class="text-muted">Hace 6 horas</small>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+          <div class="col-12 col-lg-4 mb-4">
+              <div class="card">
+                  <div class="card-header">
+                      <h5 class="card-title mb-0">Próximos Eventos</h5>
+                  </div>
+                  <div class="card-body">
+                      <div class="list-group list-group-flush">
+                          <div class="list-group-item">
+                              <h6 class="mb-1">Reunión de Profesores</h6>
+                              <small class="text-muted">
+                                  <i class="fas fa-calendar me-2"></i>
+                                  Mañana - 10:00 AM
+                              </small>
+                          </div>
+                          <div class="list-group-item">
+                              <h6 class="mb-1">Entrega de Notas</h6>
+                              <small class="text-muted">
+                                  <i class="fas fa-calendar me-2"></i>
+                                  En 3 días
+                              </small>
+                          </div>
+                          <div class="list-group-item">
+                              <h6 class="mb-1">Inicio de Inscripciones</h6>
+                              <small class="text-muted">
+                                  <i class="fas fa-calendar me-2"></i>
+                                  La próxima semana
+                              </small>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+{% endblock %}
