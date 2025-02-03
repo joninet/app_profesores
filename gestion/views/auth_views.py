@@ -59,4 +59,5 @@ def signin(request):
 
 def home(request):
     ano_lectivo = AnoLectivo.objects.get(id=request.session.get('ano_lectivo_id'))
-    return render(request, 'home.html', {'ano_lectivo': ano_lectivo})
+    anos_lectivos = AnoLectivo.objects.all()
+    return render(request, 'home.html', {'ano_lectivo': ano_lectivo, 'anos_lectivos': anos_lectivos})
