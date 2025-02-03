@@ -29,16 +29,13 @@ class AnoLectivoForm(ModelForm):
 class MateriaForm(ModelForm):
     class Meta:
         model = Materia
-        fields = ['nombre', 'colegio', 'ano_lectivo']
+        fields = ['nombre', 'colegio']
         widgets = {
             'nombre': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Ingrese el nombre de la materia'
             }),
             'colegio': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'ano_lectivo': forms.Select(attrs={
                 'class': 'form-control'
             })
         }
@@ -51,5 +48,3 @@ class MateriaForm(ModelForm):
         if user:
             # Filtrar para mostrar solo los colegios del usuario
             self.fields['colegio'].queryset = Colegio.objects.filter(user=user)
-            # Filtrar para mostrar solo los años lectivos del usuario
-            self.fields['ano_lectivo'].queryset = AnoLectivo.objects.filter(user=user)

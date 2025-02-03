@@ -58,4 +58,5 @@ def signin(request):
         })
 
 def home(request):
-    return render(request, 'home.html')
+    ano_lectivo = AnoLectivo.objects.get(id=request.session.get('ano_lectivo_id'))
+    return render(request, 'home.html', {'ano_lectivo': ano_lectivo})

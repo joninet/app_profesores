@@ -6,7 +6,7 @@ from django.db import IntegrityError
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from ..models import Colegio
+from ..models import Colegio, AnoLectivo
 
 from ..forms import ColegioForm, AnoLectivoForm, MateriaForm
 #Ano Lectivo
@@ -26,3 +26,7 @@ def ano_crear(request):
                 return render(request, 'ano_crear.html', {"form": form, "error": form.errors})
         except ValueError:
             return render(request, 'ano_crear.html', {"form": AnoLectivoForm, "error": "Error creating ano."})
+@login_required
+def mostrar_ano_lectivo(request):
+    ano_lectivo_id = request.session.get('ano_lectivo_id')
+    return redirect('ano_lectivo', ano_lectivo_id=ano_lectivo_id)
