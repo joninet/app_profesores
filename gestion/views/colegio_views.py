@@ -7,15 +7,20 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from ..models import Colegio
-from ..forms import ColegioForm, AnoLectivoForm, MateriaForm
+from ..forms import ColegioForm, AnoLectivoForm
 
 @login_required
 def colegio(request):
-    colegios = Colegio.objects.filter(user=request.user)
+    ano_lectivo_id = request.session.get('ano_lectivo_id')
+    colegios = Colegio.objects.filter(
+        user=request.user, 
+        ano_lectivo_id=ano_lectivo_id
+        ).select_related('ano_lectivo')
     form = ColegioForm()
     return render(request, 'colegio/colegio.html', {
         "colegios": colegios,
-        "form": form  # Add form to context
+        "form": form,
+        "ano_lectivo_id": ano_lectivo_id
     })
 
 @login_required

@@ -24,14 +24,26 @@ class Colegio(models.Model):
         return self.nombre
 
 class Materia(models.Model):
-    nombre = models.CharField(max_length=255)
+    nombre = models.CharField(max_length=200)
     colegio = models.ForeignKey(Colegio, on_delete=models.CASCADE)
-    ano_lectivo = models.ForeignKey(AnoLectivo, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ano_lectivo = models.ForeignKey(AnoLectivo, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.nombre} - {self.colegio.nombre}"
+
+    class Meta:
+        ordering = ['nombre']
 
 class Curso(models.Model):
     ano = models.CharField(max_length=255)
     division = models.CharField(max_length=255)
-    colegio = models.ForeignKey(Colegio, on_delete=models.CASCADE)
+    materia = models.ForeignKey(Materia, on_delete=models.CASCADE)
     ano_lectivo = models.ForeignKey(AnoLectivo, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.ano} {self.division} - {self.materia.nombre}"
+
+    class Meta:
+        ordering = ['ano']

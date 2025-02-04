@@ -7,68 +7,26 @@
     <div class="sidebar-content">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link active" href="#">
+                <a class="nav-link active" href="{% url 'home' %}">
                     <i class="fas fa-home me-2"></i> Inicio
                 </a>
             </li>
             {% if user.is_authenticated %}
             <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="collapse" href="#anoSubmenu">
-                    <i class="fas fa-users me-2"></i> Ano Lectivo
-                    <i class="fas fa-chevron-down float-end"></i>
-                </a>
-                <div class="collapse" id="anoSubmenu">
-                    <ul class="nav flex-column ms-3">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'ano_crear' %}">
-                                <i class="fas fa-plus-circle me-2"></i> Agregar
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-  
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="collapse" href="#profesoresSubmenu">
-                    <i class="fas fa-chalkboard-teacher me-2"></i> Profesores
-                    <i class="fas fa-chevron-down float-end"></i>
-                </a>
-                <div class="collapse" id="profesoresSubmenu">
-                    <ul class="nav flex-column ms-3">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-plus-circle me-2"></i> Agregar
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-edit me-2"></i> Editar
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" data-bs-toggle="collapse" href="#colegiosSubmenu">
+              <a class="nav-link" href="{% url 'colegio' %}">
                   <i class="fas fa-chalkboard-teacher me-2"></i> Colegios
-                  <i class="fas fa-chevron-down float-end"></i>
               </a>
-              <div class="collapse" id="colegiosSubmenu">
-                  <ul class="nav flex-column ms-3">
-                      <li class="nav-item">
-                          <a class="nav-link" href="{% url 'crear_colegio' %}">
-                              <i class="fas fa-plus-circle me-2"></i> Agregar
-                          </a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link" href="#">
-                              <i class="fas fa-edit me-2"></i> Editar
-                          </a>
-                      </li>
-                  </ul>
-              </div>
-          </li>
-  
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'materia' %}">
+                    <i class="fas fa-book me-2"></i> Materias
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'curso' %}">
+                    <i class="fas fa-graduation-cap me-2"></i> Cursos
+                </a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="collapse" href="#materiasSubmenu">
                     <i class="fas fa-book me-2"></i> Materias

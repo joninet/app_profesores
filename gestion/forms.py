@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Colegio, AnoLectivo, Materia, AnoLectivo
+from .models import Colegio, AnoLectivo, Materia, AnoLectivo, Curso
 
 class CustomAuthenticationForm(AuthenticationForm):
     ano_lectivo = forms.ModelChoiceField(
@@ -32,7 +32,7 @@ class AnoLectivoForm(ModelForm):
             'fecha_fin': forms.DateInput(attrs={'type': 'date'}),
         }
 
-class MateriaForm(ModelForm):
+class MateriaForm(forms.ModelForm):
     class Meta:
         model = Materia
         fields = ['nombre', 'colegio']
@@ -47,10 +47,57 @@ class MateriaForm(ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        # Extraer el usuario de kwargs antes de llamar a super()
         user = kwargs.pop('user', None)
+        ano_lectivo_id = kwargs.pop('ano_lectivo_id', None)
         super(MateriaForm, self).__init__(*args, **kwargs)
         
-        if user:
-            # Filtrar para mostrar solo los colegios del usuario
-            self.fields['colegio'].queryset = Colegio.objects.filter(user=user)
+        if user and ano_lectivo_id:
+            self.fields['colegio'].queryset = Colegio.objects.filter(
+                user=user,
+                ano_lectivo_id=ano_lectivo_id
+            ).select_related('ano_lectivo')
+
+ANO_CHOICES = [
+    ('Primero', 'Primero'),
+    ('Segundo', 'Segundo'),
+    ('Tercero', 'Tercero'),
+    ('Cuarto', 'Cuarto'),
+    ('Quinto', 'Quinto'),
+    ('Sexto', 'Sexto'),
+    ('Septimo', 'Septimo'),
+]
+
+class CursoForm(forms.ModelForm):
+    ano = forms.ChoiceField(
+        choices=ANO_CHOICES,
+        widget=forms.Select(attrs={
+            'class': 'form-control'
+        })
+    )
+    
+    class Meta:
+        model = Curso
+        fields = ['ano', 'division', 'materia']
+        widgets = {
+            'division': forms.TextInput(attrs={
+                'class': 'form-control'
+            }),
+            'materia': forms.Select(attrs={
+                'class': 'form-control'
+            })
+        }
+
+    def clean_division(self):
+        division = self.cleaned_data.get('division')
+        return division.upper() if division else division
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        ano_lectivo_id = kwargs.pop('ano_lectivo_id', None)
+        super(CursoForm, self).__init__(*args, **kwargs)
+        
+        if user and ano_lectivo_id:
+            self.fields['materia'].queryset = Materia.objects.filter(
+                user=user,
+                ano_lectivo_id=ano_lectivo_id
+            ).select_related('ano_lectivo')
