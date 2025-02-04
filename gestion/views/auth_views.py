@@ -58,6 +58,14 @@ def signin(request):
         })
 
 def home(request):
-    ano_lectivo = AnoLectivo.objects.get(id=request.session.get('ano_lectivo_id'))
+    try:
+        ano_lectivo_id = request.session.get('ano_lectivo_id')
+        if not ano_lectivo_id:
+            return redirect('signin')  # Redirigir al inicio de sesión si no hay año lectivo en la sesión
+
+        ano_lectivo = AnoLectivo.objects.get(id=ano_lectivo_id)
+    except AnoLectivo.DoesNotExist:
+        return render(request, 'error.html', {'message': 'Año lectivo no encontrado.'})
+
     anos_lectivos = AnoLectivo.objects.all()
     return render(request, 'home.html', {'ano_lectivo': ano_lectivo, 'anos_lectivos': anos_lectivos})

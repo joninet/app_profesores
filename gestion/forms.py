@@ -15,6 +15,12 @@ class ColegioForm(ModelForm):
     class Meta:
         model = Colegio
         fields = ['nombre']
+        widgets = {
+            'nombre': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ingrese el nombre del colegio'
+            })
+        }
 
 class AnoLectivoForm(ModelForm):
     class Meta:
