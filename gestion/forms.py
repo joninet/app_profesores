@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Colegio, AnoLectivo, Materia, AnoLectivo, Curso
+from .models import Colegio, AnoLectivo, Materia, AnoLectivo, Curso, Persona, Alumno
 
 class CustomAuthenticationForm(AuthenticationForm):
     ano_lectivo = forms.ModelChoiceField(
@@ -101,3 +101,55 @@ class CursoForm(forms.ModelForm):
                 user=user,
                 ano_lectivo_id=ano_lectivo_id
             ).select_related('ano_lectivo')
+
+class PersonaForm(forms.ModelForm):
+    class Meta:
+        model = Persona
+        fields = ['nombre', 'apellido', 'dni', 'fecha_nacimiento', 'email', 'telefono']
+        widgets = {
+            'nombre': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ingrese el nombre'
+            }),
+            'apellido': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ingrese el apellido'
+            }),
+            'dni': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ingrese el DNI'
+            }),
+            'fecha_nacimiento': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'ejemplo@correo.com'
+            }),
+            'telefono': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ingrese el teléfono'
+            })
+        }
+
+class AlumnoForm(forms.ModelForm):
+    class Meta:
+        model = Alumno
+        fields = ['curso']
+        widgets = {
+            'curso': forms.Select(attrs={
+                'class': 'form-control'
+            })
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        ano_lectivo_id = kwargs.pop('ano_lectivo_id', None)
+        super(AlumnoForm, self).__init__(*args, **kwargs)
+        
+        if user and ano_lectivo_id:
+            self.fields['curso'].queryset = Curso.objects.filter(
+                user=user,
+                ano_lectivo_id=ano_lectivo_id
+            ).select_related('materia')

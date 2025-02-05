@@ -6,6 +6,8 @@ from gestion.views.ano_views import ano_crear
 from gestion.views.materia_views import materia_crear, materia, eliminar_materia
 from gestion.views.ano_views import cambiar_ano_lectivo
 from gestion.views.curso_views import curso, curso_crear, eliminar_curso
+#from gestion.views.alumno_views import alumno
+from gestion.views.persona_views import persona, crear_persona, eliminar_persona
 
 urlpatterns = [
     path('', home, name='home'),
@@ -29,4 +31,10 @@ urlpatterns = [
     path('curso/', curso, name='curso'),
     path('curso_crear/', curso_crear, name='curso_crear'),
     path('curso/eliminar/<int:curso_id>/', eliminar_curso, name='eliminar_curso'),
+    #persona
+    path('persona/', persona, name='persona'),
+    path('crear_persona/', crear_persona, name='crear_persona'),
+    path('persona/eliminar/<int:persona_id>/', eliminar_persona, name='eliminar_persona'),
+    #Alumno
+    #path('alumno/', alumno, name='alumno'),
 ]
