@@ -13,9 +13,9 @@
             </li>
             {% if user.is_authenticated %}
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'colegio' %}">
-                  <i class="fas fa-chalkboard-teacher me-2"></i> Colegios
-              </a>
+                <a class="nav-link" href="{% url 'colegio' %}">
+                    <i class="fas fa-school me-2"></i> Colegios
+                </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'materia' %}">
@@ -24,79 +24,60 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{% url 'curso' %}">
-                    <i class="fas fa-graduation-cap me-2"></i> Cursos
+                    <i class="fas fa-chalkboard me-2"></i> Cursos
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="collapse" href="#materiasSubmenu">
-                    <i class="fas fa-book me-2"></i> Materias
-                    <i class="fas fa-chevron-down float-end"></i>
+                <a class="nav-link" href="{% url 'persona' %}">
+                    <i class="fas fa-users me-2"></i> Personas
                 </a>
-                <div class="collapse" id="materiasSubmenu">
-                    <ul class="nav flex-column ms-3">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'materia_crear' %}">
-                                <i class="fas fa-plus-circle me-2"></i> Agregar
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-edit me-2"></i> Editar
-                            </a>
-                        </li>
-                    </ul>
-                </div>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'alumno' %}">
+                    <i class="fas fa-user-graduate me-2"></i> Alumnos
+                </a>
+            </li>
+            {% endif %}
         </ul>
-    </div>
-  
-    <!-- Sección de logout -->
-    <div class="user-profile">
-        <div class="d-flex align-items-center mb-2">
-            <i class="fas fa-user-circle user-icon me-2"></i>
-            <div>
-                <small class="m-0 fw-bold">Usuario</small>
-                <p class="m-0 small">{{ user.username }}</p>
-                <small class="m-0 fw-bold">Año Lectivo</small>
-                <div class="d-flex align-items-center">
-                    <p class="m-0 small me-2">{{ ano_lectivo.ano }}</p>
-                    <i class="fas fa-sync-alt text-primary" style="font-size: 0.7rem;" title="Cambiar Año Lectivo" id="cambiarAnoLectivoIcon"></i>
-                </div>
+
+        {% if user.is_authenticated %}
+        <div class="mt-auto">
+            <hr class="my-3">
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user-circle fa-2x me-2"></i>
+                    <strong>{{ user.username }}</strong>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+                    <li>
+                        <a class="dropdown-item" href="{% url 'ano_crear' %}">
+                            <i class="fas fa-calendar me-2"></i>Año Lectivo
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form action="{% url 'logout' %}" method="POST" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+                            </button>
+                        </form>
+                    </li>
+                </ul>
             </div>
         </div>
-        <a href="/logout" class="btn btn-sm login-btn">
-          <i class="fas fa-sign-out-alt me-1"></i>
-          Cerrar Sesion
-        </a>
-        {% else %}
-        <a href="/signin" class="btn btn-sm login-btn">
-          <i class="fas fa-sign-out-alt me-1"></i>
-          Iniciar Sesión
-        </a>  
-        {% endif %}    
+        {% endif %}
     </div>
-  </nav>
-  <div class="modal fade" id="cambiarAnoLectivoModal" tabindex="-1" aria-labelledby="cambiarAnoLectivoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="cambiarAnoLectivoModalLabel">Cambiar Año Lectivo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="cambiarAnoLectivoForm" method="POST" action="{% url 'cambiar_ano_lectivo' %}">
-                    {% csrf_token %}
-                    <select name="ano_lectivo_id" id="anoLectivoSelect" class="form-select">
-                        {% for ano in anos_lectivos %}
-                            <option value="{{ ano.id }}" {% if ano.id == ano_lectivo.id %}selected{% endif %}>{{ ano.ano }}</option>
-                        {% endfor %}
-                    </select>
-                    <button type="submit" class="btn btn-primary btn-sm mt-2">Cambiar Año Lectivo</button>
-                </form>
-            </div>
-        </div>
+</nav>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark d-md-none fixed-top">
+    <div class="container-fluid">
+        <button id="sidebarToggle" class="btn btn-link">
+            <i class="fas fa-bars text-white"></i>
+        </button>
+        <span class="navbar-brand">EduAdmin</span>
     </div>
-</div>
+</nav>
 
 <script>
 document.getElementById('cambiarAnoLectivoIcon').addEventListener('click', function() {

@@ -34,7 +34,7 @@ def crear_persona(request):
                 new_persona.user = request.user
                 # Asignar el año lectivo antes de guardar
                 if ano_lectivo_id:
-                    new_colegio.ano_lectivo_id = ano_lectivo_id
+                    new_persona.ano_lectivo_id = ano_lectivo_id
                 new_persona.save()
                 return redirect('persona')
             
@@ -45,7 +45,7 @@ def crear_persona(request):
 
 @login_required
 def eliminar_persona(request, persona_id):
-    colegio = get_object_or_404(Persona, id=persona_id, user=request.user)
+    persona = get_object_or_404(Persona, id=persona_id, user=request.user)
     if request.method == "POST":
         persona.delete()
         return redirect('persona')

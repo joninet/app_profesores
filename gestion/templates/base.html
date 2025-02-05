@@ -81,6 +81,29 @@
             font-size: 2rem; /* Slightly smaller user icon */
             color: #a0aec0;
         }
+        @media (max-width: 768px) {
+        .sidebar {
+            margin-left: -250px;
+            z-index: 1040; /* Ensure sidebar is below the mobile navbar */
+        }
+        .sidebar.active {
+            margin-left: 0;
+        }
+        .main-content {
+            margin-left: 0;
+            width: 100%;
+        }
+        .navbar {
+            z-index: 1050; /* Ensure mobile navbar is above the sidebar */
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+        .main-content {
+            padding-top: 60px; /* Add padding to prevent content from being hidden behind navbar */
+        }
+    }
     
         /* Rest of the previous CSS remains the same */
     </style>
@@ -88,12 +111,16 @@
 <body class="bg-light">
     {% include '_navbar.html' %}
     
-    {% block content %}
-    {% endblock %}
+    <div class="main-content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
         document.getElementById('sidebarToggle').addEventListener('click', function() {
             document.querySelector('.sidebar').classList.toggle('active');
+
         });
     </script>
 </body>

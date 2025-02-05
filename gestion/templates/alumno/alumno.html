@@ -1,152 +1,172 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="main-content">
-    <div class="container-fluid">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="text-primary">
-                <i class="fas fa-school me-2"></i>Alumnos
-            </h1>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarColegioModal">
-                <i class="fas fa-plus me-2"></i>Agregar Alumno
-            </button>
-        </div>
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary">
+            <i class="fas fa-user-graduate me-2"></i>Alumnos
+        </h1>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarAlumnoModal">
+            <i class="fas fa-plus me-2"></i>Agregar Alumno
+        </button>
+    </div>
 
-        <!-- Schools List -->
-        <div class="row">
-            {% for colegio in colegios %}
-            <div class="col-12 col-md-6 col-lg-4 mb-4">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="school-icon me-3">
-                                <i class="fas fa-solid fa-arrow-right fa-2x text-primary"></i>
-                            </div>
-                            <h5 class="card-title mb-0">{{colegio.nombre}}</h5>
-                        </div>
+    <!-- Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Apellido</th>
+                            <th>Nombre</th>
+                            <th>DNI</th>
+                            <th>Curso</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for alumno in alumnos %}
+                        <tr>
+                            <td>{{ alumno.persona.apellido }}</td>
+                            <td>{{ alumno.persona.nombre }}</td>
+                            <td>{{ alumno.persona.dni }}</td>
+                            <td>{{ alumno.curso }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-outline-primary btn-sm" title="Ver">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-warning btn-sm" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteModal{{alumno.id}}" 
+                                            title="Eliminar">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No hay alumnos registrados</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Modal -->
+    <div class="modal fade" id="agregarAlumnoModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-plus me-2 text-primary"></i>
+                        Nuevo Alumno
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="alumnoForm" method="POST" action="{% url 'alumno_crear' %}">
+                        {% csrf_token %}
+                        <input type="hidden" id="persona_id" name="persona_id">
                         
-                        <div class="mt-3 pt-3 border-top d-flex justify-content-end">
-                            <button class="btn btn-outline-danger btn-sm" title="Eliminar" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#deleteModal{{colegio.id}}">
-                                <i class="fas fa-trash-alt me-1"></i>
-                                Eliminar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Delete Modal -->
-            <div class="modal fade" id="deleteModal{{colegio.id}}" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title text-danger">
-                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                Confirmar Eliminación
-                            </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            ¿Está seguro que desea eliminar el colegio <strong>{{ colegio.nombre }}</strong>?
-                            Esta acción no se puede deshacer.
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <form action="{% url 'eliminar_colegio' colegio.id %}" method="POST" class="d-inline">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-danger">
-                                    <i class="fas fa-trash-alt me-1"></i>
-                                    Confirmar Eliminación
+                        <div class="mb-3">
+                            <label class="form-label">DNI</label>
+                            <div class="input-group">
+                                <input type="text" id="dni" class="form-control" required>
+                                <button type="button" class="btn btn-primary" id="buscarDNI">
+                                    <i class="fas fa-search"></i>
                                 </button>
-                            </form>
+                            </div>
                         </div>
-                    </div>
+
+                        <div id="datosPersona" style="display: none;">
+                            <div class="mb-3">
+                                <label class="form-label">Nombre</label>
+                                <input type="text" id="nombre" class="form-control" readonly>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Apellido</label>
+                                <input type="text" id="apellido" class="form-control" readonly>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Curso</label>
+                                <select name="curso" class="form-select" required>
+                                    <option value="">Seleccione un curso</option>
+                                    {% for curso in cursos %}
+                                        <option value="{{ curso.id }}">{{ curso }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Guardar Alumno
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
-            {% empty %}
-            <div class="col-12">
-                <div class="alert alert-info d-flex align-items-center">
-                    <i class="fas fa-info-circle me-2"></i>
-                    No hay colegios registrados aún.
-                </div>
-            </div>
-            {% endfor %}
         </div>
     </div>
-</div>
-<div class="modal fade" id="agregarColegioModal" tabindex="-1" aria-labelledby="agregarColegioModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="agregarColegioModalLabel">
-                    <i class="fas fa-plus-circle me-2 text-primary"></i>
-                    Información del Colegio
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                {% if error %}
-                    <div class="alert alert-danger d-flex align-items-center" role="alert">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        {{ error }}
-                    </div>
-                {% endif %}
 
-                <form action="/crear_colegio/" method="POST">
-                    {% csrf_token %}
-                    <div class="mb-4">
-                        {{ form.as_p }}
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-2"></i>
-                            Guardar Colegio
+    <!-- Delete Modals -->
+    {% for alumno in alumnos %}
+    <div class="modal fade" id="deleteModal{{alumno.id}}" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Confirmar Eliminación
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body py-4">
+                    <p class="mb-0">¿Está seguro que desea eliminar al alumno <strong>{{ alumno.persona.apellido }}, {{ alumno.persona.nombre }}</strong>?</p>
+                    <p class="text-muted mb-0">Esta acción no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form action="{% url 'eliminar_alumno' alumno.id %}" method="POST" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash-alt me-1"></i>
+                            Confirmar Eliminación
                         </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
+    {% endfor %}
 </div>
-<style>
-.card {
-    transition: transform 0.2s ease-in-out;
-}
 
-.card:hover {
-    transform: translateY(-5px);
-}
-
-.school-icon {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background-color: rgba(49, 130, 206, 0.1);
-}
-
-.btn-outline-primary {
-    border-color: #3182ce;
-    color: #3182ce;
-}
-
-.btn-outline-primary:hover {
-    background-color: #3182ce;
-    color: white;
-}
-
-.btn-outline-danger {
-    border-color: #e53e3e;
-    color: #e53e3e;
-}
-
-.btn-outline-danger:hover {
-    background-color: #e53e3e;
-    color: white;
-}
-</style>
+<script>
+document.getElementById('buscarDNI').addEventListener('click', function() {
+    const dni = document.getElementById('dni').value;
+    
+    fetch(`/alumno/buscar-dni/?dni=${dni}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.encontrado) {
+                document.getElementById('persona_id').value = data.id;
+                document.getElementById('nombre').value = data.nombre;
+                document.getElementById('apellido').value = data.apellido;
+                document.getElementById('datosPersona').style.display = 'block';
+            } else {
+                alert('Persona no encontrada');
+            }
+        });
+});
+</script>
 {% endblock %}
