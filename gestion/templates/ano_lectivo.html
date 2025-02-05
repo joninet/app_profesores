@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary">
+            <i class="fas fa-calendar me-2"></i>Año Lectivo
+        </h1>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cambiarAnoModal">
+            <i class="fas fa-calendar-plus me-2"></i>Cambiar Año Lectivo
+        </button>
+    </div>
+
+    <!-- Current Year Card -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title text-primary">
+                <i class="fas fa-calendar-check me-2"></i>Año Lectivo Actual
+            </h5>
+            <h2 class="display-4 mt-3">{{ ano_lectivo_actual }}</h2>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="cambiarAnoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                        Cambiar Año Lectivo
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="cambiarAnoForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Seleccione el Año Lectivo</label>
+                            <select name="ano_lectivo_id" class="form-select" required>
+                                <option value="">Seleccione un año...</option>
+                                {% for ano in anos_lectivos %}
+                                    <option value="{{ ano.id }}">{{ ano.ano }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Guardar Cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('cambiarAnoForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    
+    fetch('{% url "cambiar_ano_lectivo" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert(data.error);
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User
@@ -22,27 +23,30 @@ def persona(request):
 
 @login_required
 def crear_persona(request):
-    ano_lectivo_id = request.session.get('ano_lectivo_id')
-    
-    if request.method == "GET":
-        return render(request, 'persona/persona_crear.html', {"form": PersonaForm})
+    if request.method == 'POST':
+        form = PersonaForm(request.POST)
+        if form.is_valid():
+            try:
+                persona = form.save(commit=False)
+                persona.user = request.user
+                persona.save()
+                return JsonResponse({'success': True, 'message': 'Persona creada correctamente'})
+            except IntegrityError as e:
+                # Si el error proviene de la constraint 'dni'
+                if 'unique' in str(e).lower() and 'dni' in str(e).lower():
+                    return JsonResponse({'success': False, 'error': 'El DNI ingresado ya existe en la base de datos'})
+                return JsonResponse({'success': False, 'error': f'Error de integridad: {e}'})
+        else:
+            # Si el form es inválido, revisa si el error está en ‘dni’
+            if 'dni' in form.errors:
+                return JsonResponse({'success': False, 'error': 'El DNI ingresado ya existe en la base de datos'})
+            return JsonResponse({'success': False, 'error': 'Por favor verifique los datos ingresados'})
     else:
-        try:
-            form = PersonaForm(request.POST)
-            if form.is_valid():
-                new_persona = form.save(commit=False)
-                new_persona.user = request.user
-                # Asignar el año lectivo antes de guardar
-                if ano_lectivo_id:
-                    new_persona.ano_lectivo_id = ano_lectivo_id
-                new_persona.save()
-                return redirect('persona')
-            
-        except ValueError:
-            return render(request, 'persona/persona_crear.html', 
-                        {"form": PersonaForm, 
-                         "error": "Error al crear el colegio."})
-
+        form = PersonaForm()
+    return render(request, 'persona/persona.html', {
+        'form': form,
+        'personas': Persona.objects.all()
+    })
 @login_required
 def eliminar_persona(request, persona_id):
     persona = get_object_or_404(Persona, id=persona_id, user=request.user)
@@ -50,3 +54,24 @@ def eliminar_persona(request, persona_id):
         persona.delete()
         return redirect('persona')
     return render(request, 'persona/persona_confirmar_eliminar.html', {'persona': persona})
+
+@login_required
+def persona_editar(request, persona_id):
+    persona = get_object_or_404(Persona, id=persona_id)
+    if request.method == 'POST':
+        try:
+            data = request.POST.dict()
+            for field in ['nombre', 'apellido', 'dni', 'email', 'telefono']:
+                setattr(persona, field, data.get(field, '').upper())
+            persona.fecha_nacimiento = data.get('fecha_nacimiento')
+            persona.save()
+            return JsonResponse({
+                'success': True,
+                'message': 'Persona editada correctamente'
+            })
+        except Exception as e:
+            return JsonResponse({
+                'success': False, 
+                'error': str(e)
+            })
+    return JsonResponse({'success': False, 'error': 'Método no permitido'})

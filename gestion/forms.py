@@ -58,13 +58,13 @@ class MateriaForm(forms.ModelForm):
             ).select_related('ano_lectivo')
 
 ANO_CHOICES = [
-    ('Primero', 'Primero'),
-    ('Segundo', 'Segundo'),
-    ('Tercero', 'Tercero'),
-    ('Cuarto', 'Cuarto'),
-    ('Quinto', 'Quinto'),
-    ('Sexto', 'Sexto'),
-    ('Septimo', 'Septimo'),
+    ('PRIMERO', 'PRIMERO'),
+    ('SEGUNDO', 'SEGUNDO'),
+    ('TERCERO', 'TERCERO'),
+    ('CUARTO', 'CUARTO'),
+    ('QUINTO', 'QUINTO'),
+    ('SEXTO', 'SEXTO'),
+    ('SEPTIMO', 'SEPTIMO'),
 ]
 
 class CursoForm(forms.ModelForm):
@@ -109,11 +109,11 @@ class PersonaForm(forms.ModelForm):
         widgets = {
             'nombre': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Ingrese el nombre'
+                'placeholder': 'Ingrese los nombres'
             }),
             'apellido': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Ingrese el apellido'
+                'placeholder': 'Ingrese los apellidos'
             }),
             'dni': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -132,6 +132,13 @@ class PersonaForm(forms.ModelForm):
                 'placeholder': 'Ingrese el teléfono'
             })
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        for field in ['nombre', 'apellido', 'dni', 'email', 'telefono']:
+            value = cleaned_data.get(field)
+            if value:
+                cleaned_data[field] = value.upper()
+        return cleaned_data
 
 class AlumnoForm(forms.ModelForm):
     class Meta:

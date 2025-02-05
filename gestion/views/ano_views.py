@@ -45,3 +45,12 @@ def cambiar_ano_lectivo(request):
         except AnoLectivo.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Año lectivo no encontrado.'})
     return JsonResponse({'success': False, 'error': 'Método no permitido.'})
+
+@login_required
+def ano_lectivo_lista(request):
+    ano_lectivo_actual = request.session.get('ano_lectivo')
+    anos_lectivos = AnoLectivo.objects.filter(user=request.user)
+    return render(request, 'ano_lectivo.html', {
+        'ano_lectivo_actual': ano_lectivo_actual,
+        'anos_lectivos': anos_lectivos
+    })
