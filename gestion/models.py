@@ -65,10 +65,15 @@ class Persona(models.Model):
         return f"{self.apellido}, {self.nombre}"
 
 class Alumno(models.Model):
-    persona = models.OneToOneField(Persona, on_delete=models.CASCADE)
+    persona = models.ForeignKey(
+        Persona,
+        on_delete=models.CASCADE,
+        # Remove unique=True if exists
+    )
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    ano_lectivo = models.ForeignKey(AnoLectivo, on_delete=models.CASCADE)
+    ano_lectivo = models.ForeignKey('AnoLectivo', on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ['persona__apellido', 'persona__nombre']
+        # Add unique_together instead of unique on persona
+        unique_together = ['persona', 'curso', 'ano_lectivo']

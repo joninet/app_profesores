@@ -10,8 +10,71 @@
             <i class="fas fa-plus me-2"></i>Agregar Alumno
         </button>
     </div>
-
-    <!-- Tabla de Alumnos -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <!-- Filtros -->
+            <form method="GET" class="row g-3">
+                <div class="col-md-3">
+                    <label for="filtroMateria" class="form-label">
+                        <i class="fas fa-book me-2"></i>Materia
+                    </label>
+                    <select name="materia" id="filtroMateria" class="form-select" onchange="this.form.submit()">
+                        <option value="">Todas las materias</option>
+                        {% for materia in materias %}
+                        <option value="{{ materia }}" {% if materia == materia_seleccionada %}selected{% endif %}>
+                            {{ materia }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+    
+                <div class="col-md-3">
+                    <label for="filtroCurso" class="form-label">
+                        <i class="fas fa-chalkboard me-2"></i>Curso
+                    </label>
+                    <select name="curso" id="filtroCurso" class="form-select" onchange="this.form.submit()">
+                        <option value="">Todos los cursos</option>
+                        {% for curso in cursos_lista %}
+                        <option value="{{ curso }}" {% if curso == curso_seleccionado %}selected{% endif %}>
+                            {{ curso }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+    
+                <div class="col-md-3">
+                    <label for="filtroColegio" class="form-label">
+                        <i class="fas fa-school me-2"></i>Colegio
+                    </label>
+                    <select name="colegio" id="filtroColegio" class="form-select" onchange="this.form.submit()">
+                        <option value="">Todos los colegios</option>
+                        {% for colegio in colegios %}
+                        <option value="{{ colegio }}" {% if colegio == colegio_seleccionado %}selected{% endif %}>
+                            {{ colegio }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+    
+                <div class="col-md-3">
+                    <label for="busqueda" class="form-label">
+                        <i class="fas fa-search me-2"></i>Buscar
+                    </label>
+                    <div class="input-group">
+                        <input type="text" 
+                               class="form-control" 
+                               id="busqueda"
+                               name="busqueda" 
+                               value="{{ busqueda }}" 
+                               placeholder="Nombre o DNI...">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>   
     <div class="card border-0 shadow-sm">
         <div class="card-body">
             <div class="table-responsive">
@@ -63,10 +126,52 @@
                     </tbody>
                 </table>
             </div>
+            <div class="pagination justify-content-center">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if alumnos.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1&materia={{ materia_seleccionada }}&curso={{ curso_seleccionado }}&colegio={{ colegio_seleccionado }}&busqueda={{ busqueda }}" aria-label="Primero">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ alumnos.previous_page_number }}&materia={{ materia_seleccionada }}&curso={{ curso_seleccionado }}&colegio={{ colegio_seleccionado }}&busqueda={{ busqueda }}" aria-label="Anterior">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+            
+                        {% for num in alumnos.paginator.page_range %}
+                        {% if alumnos.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                        {% elif num > alumnos.number|add:'-3' and num < alumnos.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}&materia={{ materia_seleccionada }}&curso={{ curso_seleccionado }}&colegio={{ colegio_seleccionado }}&busqueda={{ busqueda }}">{{ num }}</a>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+            
+                        {% if alumnos.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ alumnos.next_page_number }}&materia={{ materia_seleccionada }}&curso={{ curso_seleccionado }}&colegio={{ colegio_seleccionado }}&busqueda={{ busqueda }}" aria-label="Siguiente">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ alumnos.paginator.num_pages }}&materia={{ materia_seleccionada }}&curso={{ curso_seleccionado }}&colegio={{ colegio_seleccionado }}&busqueda={{ busqueda }}" aria-label="Último">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
         </div>
     </div>
 </div>
-
 <!-- Modal Agregar Alumno -->
 <div class="modal fade" id="agregarAlumnoModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -115,6 +220,51 @@
     </div>
 </div>
 {% for alumno in alumnos %}
+    <!-- View Modal -->
+    <div class="modal fade" id="viewModal{{alumno.id}}" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user me-2 text-primary"></i>
+                        Detalles de la Persona
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label class="form-label text-muted">Nombre Completo</label>
+                            <p class="h5">{{ alumno.persona.apellido }}, {{ alumno.persona.nombre }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">DNI</label>
+                            <p class="h5">{{ alumno.persona.dni }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Fecha de Nacimiento</label>
+                            <p class="h5">{{ alumno.persona.fecha_nacimiento|date:"d/m/Y" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Email</label>
+                            <p class="h5">{{ alumno.persona.email }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Teléfono</label>
+                            <p class="h5">{{ alumno.persona.telefono }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label text-muted">Curso / Materia / Colegio</label>
+                            <p class="h5">{{ alumno.curso }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Delete Modal -->
     <div class="modal fade" id="deleteModal{{alumno.id}}" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">

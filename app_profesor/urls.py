@@ -40,6 +40,6 @@ urlpatterns = [
     #Alumno
     path('alumno/buscar-dni/', buscar_persona_dni, name='buscar_persona_dni'),
     path('alumno/crear/', alumno_crear, name='alumno_crear'),
-    path('alumno/', alumno_lista, name='alumno'),
+    path('alumno/', alumno_lista, name='alumno_lista'),
     path('alumno/eliminar/<int:alumno_id>/', eliminar_alumno, name='eliminar_alumno'),
 ]
