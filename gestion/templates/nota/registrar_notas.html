@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="text-primary mb-4">
+        <i class="fas fa-file-alt me-2"></i>Registrar Notas
+    </h1>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Alumno</th>
+                            <th>Nota</th>
+                            <th>Recuperatorio 1</th>
+                            <th>Recuperatorio 2</th>
+                            <th>Recuperatorio 3</th>
+                            <th>Recuperatorio 4</th>
+                            <th>Promedio</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for data in notas_data %}
+                        {% with promedio=data.nota.calcular_promedio %}
+                        <tr class="{% if promedio >= 6 %}table-success{% elif promedio < 6 %}table-warning{% endif %}">
+                            <td>{{ data.alumno.persona.apellido }}, {{ data.alumno.persona.nombre }}</td>
+                            <form method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="alumno_id" value="{{ data.alumno.id }}">
+                                <td>{{ data.form.nota }}</td>
+                                <td>{{ data.form.recuperatorio1 }}</td>
+                                <td>{{ data.form.recuperatorio2 }}</td>
+                                <td>{{ data.form.recuperatorio3 }}</td>
+                                <td>{{ data.form.recuperatorio4 }}</td>
+                                <td>{{ promedio|floatformat:2 }}</td>
+                                <td>
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-save"></i>
+                                    </button>
+                                </td>
+                            </form>
+                        </tr>
+                        {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

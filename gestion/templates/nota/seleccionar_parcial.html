@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="text-primary mb-4">
+        <i class="fas fa-file-alt me-2"></i>Seleccionar Parcial
+    </h1>
+    
+    {% if parciales %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for parcial in parciales %}
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ parcial.tema }}</h5>
+                    <p class="card-text">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>{{ parcial.fecha|date:"d/m/Y" }}
+                        </small>
+                    </p>
+                    <p class="card-text">
+                        <i class="fas fa-book me-2"></i>{{ parcial.curso.materia.nombre }}
+                    </p>
+                    <a href="{% url 'registrar_notas' parcial.id %}" class="btn btn-primary">
+                        <i class="fas fa-pencil-alt me-1"></i>Registrar Notas
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>No hay parciales disponibles.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

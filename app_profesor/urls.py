@@ -8,6 +8,8 @@ from gestion.views.ano_views import cambiar_ano_lectivo, ano_lectivo_lista
 from gestion.views.curso_views import curso, curso_crear, eliminar_curso
 from gestion.views.alumno_views import buscar_persona_dni, alumno_crear, alumno_lista, eliminar_alumno
 from gestion.views.persona_views import persona, crear_persona, eliminar_persona, persona_editar
+from gestion.views.parcial_views import parcial, parcial_crear, eliminar_parcial
+from gestion.views.notas_views import seleccionar_parcial, registrar_notas
 
 urlpatterns = [
     path('', home, name='home'),
@@ -42,4 +44,11 @@ urlpatterns = [
     path('alumno/crear/', alumno_crear, name='alumno_crear'),
     path('alumno/', alumno_lista, name='alumno_lista'),
     path('alumno/eliminar/<int:alumno_id>/', eliminar_alumno, name='eliminar_alumno'),
+    #Parcial
+    path('parcial/', parcial, name='parcial'),
+    path('parcial_crear/', parcial_crear, name='parcial_crear'),
+    path('parcial/eliminar/<int:parcial_id>/', eliminar_parcial, name='eliminar_parcial'),
+    #Notas
+    path('notas/', seleccionar_parcial, name='seleccionar_parcial'),
+    path('notas/<int:parcial_id>/', registrar_notas, name='registrar_notas'),
 ]

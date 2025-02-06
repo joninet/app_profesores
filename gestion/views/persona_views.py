@@ -9,16 +9,33 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from ..models import Persona
 from ..forms import PersonaForm, AnoLectivoForm
+from django.db.models import Q
+from django.core.paginator import Paginator
 
 @login_required
 def persona(request):
+    query = request.GET.get('q', '')
     personas = Persona.objects.filter(
         user=request.user
+    )
+
+    if query:
+        personas = personas.filter(
+            Q(nombre__icontains=query) | 
+            Q(apellido__icontains=query) | 
+            Q(dni__icontains=query)
         )
+
+    paginator = Paginator(personas, 20)  # Muestra 20 alumnos por página
+    page_number = request.GET.get('page')  # Obtiene el número de página de la URL
+    page_obj = paginator.get_page(page_number)  # Obtiene los alumnos de esa página
+    personas = page_obj  # Asigna los alumnos de la página a la variable alumnos
     form = PersonaForm()
+
     return render(request, 'persona/persona.html', {
         "personas": personas,
-        "form": form
+        "form": form,
+        "query": query
     })
 
 @login_required

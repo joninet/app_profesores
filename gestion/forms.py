@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Colegio, AnoLectivo, Materia, AnoLectivo, Curso, Persona, Alumno
+from .models import Colegio, AnoLectivo, Materia, AnoLectivo, Curso, Persona, Alumno, Parcial, Nota
 
 class CustomAuthenticationForm(AuthenticationForm):
     ano_lectivo = forms.ModelChoiceField(
@@ -160,3 +160,47 @@ class AlumnoForm(forms.ModelForm):
                 user=user,
                 ano_lectivo_id=ano_lectivo_id
             ).select_related('materia')
+
+class ParcialForm(forms.ModelForm):
+    class Meta:
+        model = Parcial
+        fields = ['tema', 'fecha', 'curso']
+        widgets = {
+            'tema': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ingrese el tema del parcial'
+            }),
+            'fecha': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+            'curso': forms.Select(attrs={
+                'class': 'form-control'
+            })
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        ano_lectivo_id = kwargs.pop('ano_lectivo_id', None)
+        super().__init__(*args, **kwargs)
+        
+        if user and ano_lectivo_id:
+            self.fields['curso'].queryset = Curso.objects.filter(
+                user=user,
+                ano_lectivo_id=ano_lectivo_id
+            )
+
+from django import forms
+from .models import Nota, Parcial
+
+class NotaForm(forms.ModelForm):
+    class Meta:
+        model = Nota
+        fields = ['nota', 'recuperatorio1', 'recuperatorio2', 'recuperatorio3', 'recuperatorio4']
+        widgets = {
+            'nota': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'recuperatorio1': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'recuperatorio2': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'recuperatorio3': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'recuperatorio4': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'})
+        }

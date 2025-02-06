@@ -77,3 +77,43 @@ class Alumno(models.Model):
     class Meta:
         # Add unique_together instead of unique on persona
         unique_together = ['persona', 'curso', 'ano_lectivo']
+
+class Parcial(models.Model):
+    tema = models.CharField(max_length=255)
+    fecha = models.DateField()
+    curso = models.ForeignKey(Curso, on_delete=models.CASCADE)  # Changed from materia
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ano_lectivo = models.ForeignKey(AnoLectivo, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.tema} - {self.curso.materia.nombre}"
+
+class Nota(models.Model):
+    nota = models.DecimalField(max_digits=5, decimal_places=2)
+    recuperatorio1 = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    recuperatorio2 = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    recuperatorio3 = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    recuperatorio4 = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
+    parcial = models.ForeignKey(Parcial, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ano_lectivo = models.ForeignKey(AnoLectivo, on_delete=models.CASCADE)
+
+    def calcular_promedio(self):
+        notas = [self.nota]
+        if self.recuperatorio1:
+            notas.append(self.recuperatorio1)
+        if self.recuperatorio2:
+            notas.append(self.recuperatorio2)
+        if self.recuperatorio3:
+            notas.append(self.recuperatorio3)
+        if self.recuperatorio4:
+            notas.append(self.recuperatorio4)
+        
+        return sum(notas) / len(notas) if notas else 0
+
+    def __str__(self):
+        return f"{self.parcial.tema} - {self.alumno.persona.apellido}, {self.alumno.persona.nombre} - {self.nota}"
+
+    class Meta:
+        ordering = ['parcial__fecha']

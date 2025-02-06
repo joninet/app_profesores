@@ -17,6 +17,7 @@ def colegio(request):
         ano_lectivo_id=ano_lectivo_id
         ).select_related('ano_lectivo')
     form = ColegioForm()
+    
     return render(request, 'colegio/colegio.html', {
         "colegios": colegios,
         "form": form,
