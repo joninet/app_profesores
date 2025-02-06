@@ -69,9 +69,14 @@ def persona_editar(request, persona_id):
                 'success': True,
                 'message': 'Persona editada correctamente'
             })
-        except Exception as e:
+        except IntegrityError as e:
+            if 'unique' in str(e).lower() and 'dni' in str(e).lower():
+                return JsonResponse({
+                    'success': False,
+                    'error': 'El DNI ingresado ya existe en la base de datos'
+                })
             return JsonResponse({
                 'success': False, 
-                'error': str(e)
+                'error': 'Por favor verifique los datos ingresados'
             })
     return JsonResponse({'success': False, 'error': 'Método no permitido'})

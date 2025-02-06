@@ -243,12 +243,13 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Manejo del formulario de agregar
         const addForm = document.getElementById('addPersonaForm');
         if (addForm) {
             addForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 const formData = new FormData(this);
-                
+    
                 fetch(this.action, {
                     method: 'POST',
                     body: formData,
@@ -261,7 +262,6 @@
                     if (data.success) {
                         const modal = bootstrap.Modal.getInstance(document.getElementById('agregarPersonaModal'));
                         modal.hide();
-                        
                         Swal.fire({
                             icon: 'success',
                             title: '¡Éxito!',
@@ -291,6 +291,55 @@
                 });
             });
         }
+    
+        // Manejo de los formularios de editar
+        document.querySelectorAll('[id^="editForm"]').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+    
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const modalId = this.closest('.modal').id;
+                        const modal = bootstrap.Modal.getInstance(document.getElementById(modalId));
+                        modal.hide();
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Éxito!',
+                            text: data.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error,
+                            confirmButtonColor: '#3085d6'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Hubo un error al procesar la solicitud',
+                        confirmButtonColor: '#3085d6'
+                    });
+                });
+            });
+        });
     });
     </script>
 {% endblock %}
