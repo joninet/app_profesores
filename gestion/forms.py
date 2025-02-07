@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Colegio, AnoLectivo, Materia, AnoLectivo, Curso, Persona, Alumno, Parcial, Nota
+from .models import Colegio, AnoLectivo, Materia, AnoLectivo, Curso, Persona, Alumno, Parcial, Nota, Evento
 
 class CustomAuthenticationForm(AuthenticationForm):
     ano_lectivo = forms.ModelChoiceField(
@@ -166,17 +166,9 @@ class ParcialForm(forms.ModelForm):
         model = Parcial
         fields = ['tema', 'fecha', 'curso']
         widgets = {
-            'tema': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Ingrese el tema del parcial'
-            }),
-            'fecha': forms.DateInput(attrs={
-                'class': 'form-control',
-                'type': 'date'
-            }),
-            'curso': forms.Select(attrs={
-                'class': 'form-control'
-            })
+            'tema': forms.TextInput(attrs={'class': 'form-control'}),
+            'fecha': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'curso': forms.Select(attrs={'class': 'form-control'})
         }
 
     def __init__(self, *args, **kwargs):
@@ -203,4 +195,16 @@ class NotaForm(forms.ModelForm):
             'recuperatorio2': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'recuperatorio3': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'recuperatorio4': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'})
+        }
+
+class EventoForm(forms.ModelForm):
+    class Meta:
+        model = Evento
+        fields = ['titulo', 'descripcion', 'fecha', 'hora', 'recordatorio']
+        widgets = {
+            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'fecha': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'hora': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
+            'recordatorio': forms.Select(attrs={'class': 'form-control'})
         }

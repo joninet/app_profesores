@@ -1,10 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
+
 <div class="container-fluid">
     <h1 class="text-primary mb-4">
         <i class="fas fa-file-alt me-2"></i>Registrar Notas
     </h1>
-
+    <button type="button" class="btn btn-info my-3 text-white" 
+            style="background: linear-gradient(to right, #0b3e55, #2c926f); border: none;"
+            data-bs-toggle="modal" 
+            data-bs-target="#graficoModal">
+        <i class="fas fa-chart-bar"></i> Ver Gráfico
+    </button>  
     <div class="card border-0 shadow-sm">
         <div class="card-body">
             <div class="table-responsive">
@@ -36,9 +42,14 @@
                                 <td>{{ data.form.recuperatorio4 }}</td>
                                 <td>{{ promedio|floatformat:2 }}</td>
                                 <td>
-                                    <button type="submit" class="btn btn-primary btn-sm">
-                                        <i class="fas fa-save"></i>
-                                    </button>
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" name="action" value="update" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-save"></i>
+                                        </button>
+                                        <button type="submit" name="action" value="send_email" class="btn btn-secondary btn-sm">
+                                            <i class="fas fa-envelope"></i>
+                                        </button>
+                                    </div>
                                 </td>
                             </form>
                         </tr>
@@ -50,4 +61,120 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="graficoModal" tabindex="-1" aria-labelledby="graficoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="graficoModalLabel">Distribución de Notas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <canvas id="notasChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        {% if messages %}
+            {% for message in messages %}
+                Swal.fire({
+                    title: "{% if message.tags == 'success' %}Éxito{% else %}Aviso{% endif %}",
+                    text: "{{ message }}",
+                    icon: "{{ message.tags }}",
+                    confirmButtonText: "OK"
+                }).then(() => {
+                    fetch("{% url 'limpiar_mensajes' %}", { method: "POST" }); // Llama a la vista para limpiar mensajes
+                });
+            {% endfor %}
+        {% endif %}
+    });
+</script>
+
+
+<!-- Incluir Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var ctx = document.getElementById('notasChart').getContext('2d');
+        var chart = null;
+
+        var notas = JSON.parse('{{ notas_list|safe }}');
+        var promedioGeneral = {{ promedio_general|safe }}; // 🔹 Ahora es un número válido
+
+        console.log("Notas cargadas:", notas);
+        console.log("Promedio general:", promedioGeneral);
+
+        var labels = notas.map((_, i) => `Alumno ${i + 1}`);
+
+        var modal = document.getElementById('graficoModal');
+        modal.addEventListener('shown.bs.modal', function () {
+            if (chart !== null) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Notas del Parcial',
+                            data: notas,
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Promedio General',
+                            data: new Array(notas.length).fill(promedioGeneral),
+                            type: 'line',
+                            borderColor: 'red',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10
+                        }
+                    }
+                }
+            });
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if email_sent %}
+            Swal.fire({
+                title: 'Éxito',
+                text: 'Correo enviado correctamente',
+                icon: 'success',
+                confirmButtonColor: '#2c926f'
+            });
+        {% endif %}
+        
+        {% if email_error %}
+            Swal.fire({
+                title: 'Error',
+                text: '{{ email_error }}',
+                icon: 'error',
+                confirmButtonColor: '#d33'
+            });
+        {% endif %}
+    });
+    </script>
+
+
 {% endblock %}

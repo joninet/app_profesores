@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary">
+            <i class="fas fa-file-alt me-2"></i>Generar Parcial: {{ parcial.tema }}
+        </h1>
+        <a href="{% url 'parcial' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Volver a Parciales
+        </a>
+    </div>
+    
+    <!-- Form para agregar preguntas -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Pregunta</label>
+                    <textarea name="pregunta" class="form-control" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Puntaje</label>
+                    <input type="number" name="puntaje" class="form-control" step="0.5" required>
+                </div>
+                <div id="opciones" class="mb-3">
+                    <label class="form-label">Opciones</label>
+                    <div class="opciones-container">
+                        <div class="input-group mb-2">
+                            <div class="input-group-text">
+                                <input type="checkbox" name="correctas[]" value="0">
+                            </div>
+                            <input type="text" name="opciones[]" class="form-control" required>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="agregarOpcion()">
+                        <i class="fas fa-plus me-2"></i>Agregar Opción
+                    </button>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar Pregunta</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Lista de preguntas -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            {% for pregunta in preguntas %}
+            <div class="pregunta mb-4">
+                <h5>{{ forloop.counter }}. {{ pregunta.pregunta }} ({{ pregunta.puntaje }} puntos)</h5>
+                <ul>
+                    {% for opcion in pregunta.opcionpregunta_set.all %}
+                    <li>{{ opcion.opcion }} {% if opcion.es_correcta %}✓{% endif %}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+function agregarOpcion() {
+    const container = document.querySelector('.opciones-container');
+    const index = container.children.length;
+    
+    const div = document.createElement('div');
+    div.className = 'input-group mb-2';
+    div.innerHTML = `
+        <div class="input-group-text">
+            <input type="checkbox" name="correctas[]" value="${index}">
+        </div>
+        <input type="text" name="opciones[]" class="form-control" required>
+    `;
+    
+    container.appendChild(div);
+}
+</script>
+{% endblock %}

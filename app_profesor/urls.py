@@ -8,12 +8,15 @@ from gestion.views.ano_views import cambiar_ano_lectivo, ano_lectivo_lista
 from gestion.views.curso_views import curso, curso_crear, eliminar_curso
 from gestion.views.alumno_views import buscar_persona_dni, alumno_crear, alumno_lista, eliminar_alumno
 from gestion.views.persona_views import persona, crear_persona, eliminar_persona, persona_editar
-from gestion.views.parcial_views import parcial, parcial_crear, eliminar_parcial
+from gestion.views.parcial_views import parcial, parcial_crear, eliminar_parcial, generar_parcial, imprimir_parcial, clonar_parcial
 from gestion.views.notas_views import seleccionar_parcial, registrar_notas
+from gestion.views.limpiar_views import limpiar_mensajes
+from gestion.views.evento_views import evento_lista, evento_crear, evento_editar, evento_eliminar
 
 urlpatterns = [
     path('', home, name='home'),
     path('admin/', admin.site.urls),
+    path('limpiar-mensajes/', limpiar_mensajes, name='limpiar_mensajes'),
     #Auth
     path('signup/', signup, name='signup'),
     path('logout/', signout, name='logout'),
@@ -48,7 +51,15 @@ urlpatterns = [
     path('parcial/', parcial, name='parcial'),
     path('parcial_crear/', parcial_crear, name='parcial_crear'),
     path('parcial/eliminar/<int:parcial_id>/', eliminar_parcial, name='eliminar_parcial'),
+    path('parcial/<int:parcial_id>/generar/', generar_parcial, name='generar_parcial'),
+    path('parcial/<int:parcial_id>/imprimir/', imprimir_parcial, name='imprimir_parcial'),
+    path('parcial/<int:parcial_id>/clonar/', clonar_parcial, name='clonar_parcial'),
     #Notas
     path('notas/', seleccionar_parcial, name='seleccionar_parcial'),
     path('notas/<int:parcial_id>/', registrar_notas, name='registrar_notas'),
+    #Evento
+    path('eventos/', evento_lista, name='evento_lista'),
+    path('eventos/crear/', evento_crear, name='evento_crear'),
+    path('eventos/<int:evento_id>/editar/', evento_editar, name='evento_editar'),
+    path('eventos/<int:evento_id>/eliminar/', evento_eliminar, name='evento_eliminar'),
 ]

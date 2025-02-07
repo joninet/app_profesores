@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import datetime, timedelta
 
 class AnoLectivo(models.Model):
     ano = models.PositiveIntegerField(unique=True)
@@ -43,7 +44,7 @@ class Curso(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.ano} {self.division} - {self.materia}"
+        return f"{self.ano} {self.division} - {self.materia} - {self.ano_lectivo}"
 
     class Meta:
         ordering = ['ano']
@@ -79,9 +80,9 @@ class Alumno(models.Model):
         unique_together = ['persona', 'curso', 'ano_lectivo']
 
 class Parcial(models.Model):
-    tema = models.CharField(max_length=255)
+    tema = models.CharField(max_length=200)
     fecha = models.DateField()
-    curso = models.ForeignKey(Curso, on_delete=models.CASCADE)  # Changed from materia
+    curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     ano_lectivo = models.ForeignKey(AnoLectivo, on_delete=models.CASCADE)
 
@@ -117,3 +118,56 @@ class Nota(models.Model):
 
     class Meta:
         ordering = ['parcial__fecha']
+
+class PreguntaParcial(models.Model):
+    parcial = models.ForeignKey(Parcial, on_delete=models.CASCADE)
+    pregunta = models.TextField()
+    puntaje = models.DecimalField(max_digits=5, decimal_places=2)
+    orden = models.IntegerField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['orden']
+
+class OpcionPregunta(models.Model):
+    pregunta = models.ForeignKey(PreguntaParcial, on_delete=models.CASCADE)
+    opcion = models.CharField(max_length=255)
+    es_correcta = models.BooleanField(default=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class Evento(models.Model):
+    REMINDER_CHOICES = [
+        (15, '15 minutos antes'),
+        (30, '30 minutos antes'),
+        (60, '1 hora antes'),
+        (120, '2 horas antes'),
+        (1440, '1 día antes'),
+        (10080, '1 semana antes'),
+    ]
+
+    titulo = models.CharField(max_length=200)
+    descripcion = models.TextField(blank=True)
+    fecha = models.DateField()
+    hora = models.TimeField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ano_lectivo = models.ForeignKey(AnoLectivo, on_delete=models.CASCADE)
+    recordatorio = models.IntegerField(choices=REMINDER_CHOICES, default=60)
+    recordatorio_enviado = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['fecha', 'hora']
+
+    def __str__(self):
+        return f"{self.titulo} - {self.fecha}"
+
+    def debe_enviar_recordatorio(self):
+        if self.recordatorio_enviado:
+            return False
+            
+        fecha_hora_evento = datetime.combine(self.fecha, self.hora)
+        tiempo_recordatorio = timedelta(minutes=self.recordatorio)
+        ahora = datetime.now()
+        
+        return (fecha_hora_evento - tiempo_recordatorio) <= ahora < fecha_hora_evento

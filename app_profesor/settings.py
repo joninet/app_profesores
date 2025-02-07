@@ -132,3 +132,10 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'https://localhost:8000'
 ]
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+"""EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.tu-servidor.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'tu_usuario'
+EMAIL_HOST_PASSWORD = 'tu_password'"""
