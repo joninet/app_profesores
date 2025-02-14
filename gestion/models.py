@@ -171,3 +171,14 @@ class Evento(models.Model):
         ahora = datetime.now()
         
         return (fecha_hora_evento - tiempo_recordatorio) <= ahora < fecha_hora_evento
+    
+class ConfiguracionEmail(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    email = models.EmailField()
+    smtp_server = models.CharField(max_length=200)
+    smtp_port = models.IntegerField(default=587)
+    use_tls = models.BooleanField(default=True)
+    email_password = models.CharField(max_length=200)
+    
+    def __str__(self):
+        return f"Configuración email de {self.user.username}"

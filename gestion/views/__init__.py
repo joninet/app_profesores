@@ -8,3 +8,5 @@ from .parcial_views import *
 from .notas_views import *
 from .limpiar_views import *
 from .evento_views import *
+from .email_views import *
+

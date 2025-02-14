@@ -12,6 +12,7 @@ from gestion.views.parcial_views import parcial, parcial_crear, eliminar_parcial
 from gestion.views.notas_views import seleccionar_parcial, registrar_notas
 from gestion.views.limpiar_views import limpiar_mensajes
 from gestion.views.evento_views import evento_lista, evento_crear, evento_editar, evento_eliminar
+from gestion.views.email_views import configuracion_email
 
 urlpatterns = [
     path('', home, name='home'),
@@ -62,4 +63,6 @@ urlpatterns = [
     path('eventos/crear/', evento_crear, name='evento_crear'),
     path('eventos/<int:evento_id>/editar/', evento_editar, name='evento_editar'),
     path('eventos/<int:evento_id>/eliminar/', evento_eliminar, name='evento_eliminar'),
+    #email
+    path('configuracion/email/', configuracion_email, name='configuracion_email'),
 ]

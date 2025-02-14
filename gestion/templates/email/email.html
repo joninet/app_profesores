@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-envelope me-2"></i>
+                        Configuración de Email
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            {{ form.email }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Servidor SMTP</label>
+                            {{ form.smtp_server }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Puerto SMTP</label>
+                            {{ form.smtp_port }}
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            {{ form.use_tls }}
+                            <label class="form-check-label">Usar TLS</label>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Contraseña</label>
+                            {{ form.email_password }}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Guardar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from .models import Colegio, AnoLectivo, Materia, AnoLectivo, Curso, Persona, Alumno, Parcial, Nota, Evento
+from .models import Colegio, AnoLectivo, Materia, AnoLectivo, Curso, Persona, Alumno, Parcial, Nota, Evento, ConfiguracionEmail
 
 class CustomAuthenticationForm(AuthenticationForm):
     ano_lectivo = forms.ModelChoiceField(
@@ -207,4 +207,17 @@ class EventoForm(forms.ModelForm):
             'fecha': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'hora': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
             'recordatorio': forms.Select(attrs={'class': 'form-control'})
+        }
+
+class ConfiguracionEmailForm(forms.ModelForm):
+    email_password = forms.CharField(widget=forms.PasswordInput)
+    
+    class Meta:
+        model = ConfiguracionEmail
+        fields = ['email', 'smtp_server', 'smtp_port', 'use_tls', 'email_password']
+        widgets = {
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'smtp_server': forms.TextInput(attrs={'class': 'form-control'}),
+            'smtp_port': forms.NumberInput(attrs={'class': 'form-control'}),
+            'use_tls': forms.CheckboxInput(attrs={'class': 'form-check-input'})
         }
