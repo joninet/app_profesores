@@ -210,8 +210,6 @@ class EventoForm(forms.ModelForm):
         }
 
 class ConfiguracionEmailForm(forms.ModelForm):
-    email_password = forms.CharField(widget=forms.PasswordInput)
-    
     class Meta:
         model = ConfiguracionEmail
         fields = ['email', 'smtp_server', 'smtp_port', 'use_tls', 'email_password']
@@ -219,5 +217,9 @@ class ConfiguracionEmailForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control'}),
             'smtp_server': forms.TextInput(attrs={'class': 'form-control'}),
             'smtp_port': forms.NumberInput(attrs={'class': 'form-control'}),
-            'use_tls': forms.CheckboxInput(attrs={'class': 'form-check-input'})
+            'use_tls': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'email_password': forms.PasswordInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ingrese contraseña de 16 digitos'
+            })
         }
