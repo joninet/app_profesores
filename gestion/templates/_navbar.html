@@ -71,6 +71,12 @@
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
+                        <a class="dropdown-item" href="{% url 'configuracion_email' %}">
+                            <i class="fas fa-envelope me-2"></i>Configurar Correo
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
                         <form action="{% url 'logout' %}" method="POST" class="d-inline">
                             {% csrf_token %}
                             <button type="submit" class="dropdown-item">

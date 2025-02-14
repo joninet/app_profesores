@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary">
+            <i class="fas fa-envelope me-2"></i>Configurar Correo
+        </h1>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#instruccionesAlumnoModal">
+            <i class="fas fa-plus me-2"></i>Ver Instrucciones
+        </button>
+    </div>
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
@@ -48,4 +56,109 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="instruccionesAlumnoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-info-circle me-2 text-primary"></i>Instrucciones de Configuración
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="instruction-container">
+                    <div class="step mb-4">
+                        <h5 class="text-secondary">
+                            <i class="fas fa-key me-2"></i>
+                            1. Configurar Seguridad
+                        </h5>
+                        <div class="ps-4">
+                            <p>• Ir a <a href="https://myaccount.google.com/security" target="_blank" class="text-primary">Google Account Security</a></p>
+                            <p>• Activar verificación en dos pasos</p>
+                        </div>
+                    </div>
+
+                    <div class="step mb-4">
+                        <h5 class="text-secondary">
+                            <i class="fas fa-lock me-2"></i>
+                            2. Generar Contraseña de Aplicación
+                        </h5>
+                        <div class="ps-4">
+                            <p>• Ir a <a href="https://myaccount.google.com/apppasswords" target="_blank" class="text-primary">App Passwords</a></p>
+                            <p>• Seleccionar "Otra (nombre personalizado)"</p>
+                            <p>• Nombrar como "Email config"</p>
+                            <p>• Copiar la contraseña generada de 16 caracteres</p>
+                        </div>
+                    </div>
+
+                    <div class="step mb-4">
+                        <h5 class="text-secondary">
+                            <i class="fas fa-cog me-2"></i>
+                            3. Configurar Formulario
+                        </h5>
+                        <div class="ps-4">
+                            <div class="bg-light p-3 rounded">
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2"><i class="fas fa-envelope me-2"></i><strong>Email:</strong> tu.email@gmail.com</li>
+                                    <li class="mb-2"><i class="fas fa-server me-2"></i><strong>Servidor SMTP:</strong> smtp.gmail.com</li>
+                                    <li class="mb-2"><i class="fas fa-network-wired me-2"></i><strong>Puerto SMTP:</strong> 587</li>
+                                    <li class="mb-2"><i class="fas fa-shield-alt me-2"></i><strong>Usar TLS:</strong> Activado</li>
+                                    <li><i class="fas fa-key me-2"></i><strong>Contraseña:</strong> Pegar contraseña generada</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <h5 class="text-secondary">
+                            <i class="fas fa-save me-2"></i>
+                            4. Guardar Configuración
+                        </h5>
+                        <div class="ps-4">
+                            <p class="mb-0">• Hacer clic en el botón "Guardar" para finalizar la configuración</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .instruction-container {
+        padding: 20px;
+    }
+    
+    .step {
+        border-left: 3px solid #0d6efd;
+        padding-left: 15px;
+        margin-bottom: 25px;
+    }
+    
+    .step:last-child {
+        margin-bottom: 0;
+    }
+    
+    .step h5 {
+        color: #0d6efd;
+        margin-bottom: 15px;
+    }
+    
+    .step p {
+        margin-bottom: 8px;
+        color: #495057;
+    }
+    
+    .modal-body a {
+        text-decoration: none;
+    }
+    
+    .modal-body a:hover {
+        text-decoration: underline;
+    }
+    
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+</style>
 {% endblock %}
