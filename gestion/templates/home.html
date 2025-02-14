@@ -1,139 +1,144 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %}
 
-<!-- Main Content -->
-  <div class="container-fluid">
-      <div class="row g-4 mb-4">
-          <div class="col-12 col-md-6 col-lg-3">
-              <div class="stat-card p-3">
-                  <div class="d-flex justify-content-between align-items-center">
-                      <div>
-                          <h6 class="text-muted mb-2">Año Lectivo</h6>
-                          <h3 class="mb-0">{{ ano_lectivo.ano }}</h3>
-                      </div>
-                      <div class="bg-primary bg-opacity-10 p-3 rounded">
-                          <i class="fas fa-calendar-days text-primary fa-2x" id="cambiarAnoLectivoIcon"></i>
-                      </div>
-                  </div>
-              </div>
-          </div>
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Próximos Eventos -->
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-calendar me-2"></i>Próximos Eventos</h5>
+                        <a href="{% url 'evento_crear' %}" class="btn btn-light btn-sm">
+                            <i class="fas fa-plus me-1"></i>Nuevo Evento
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for evento in proximos_eventos %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="card-title text-primary">{{ evento.titulo }}</h6>
+                                    <p class="card-text small mb-1">
+                                        <i class="fas fa-calendar-day me-2"></i>{{ evento.fecha|date:"d/m/Y" }}
+                                    </p>
+                                    <p class="card-text small mb-0">
+                                        <i class="fas fa-clock me-2"></i>{{ evento.hora|time:"H:i" }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <p class="text-muted mb-0">No hay eventos próximos</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
 
-          <div class="col-12 col-md-6 col-lg-3">
-              <div class="stat-card p-3">
-                  <div class="d-flex justify-content-between align-items-center">
-                      <div>
-                          <h6 class="text-muted mb-2">Total Profesores</h6>
-                          <h3 class="mb-0">56</h3>
-                      </div>
-                      <div class="bg-success bg-opacity-10 p-3 rounded">
-                          <i class="fas fa-chalkboard-teacher text-success fa-2x"></i>
-                      </div>
-                  </div>
-              </div>
-          </div>
+        <!-- Últimos Registros -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-user-graduate me-2"></i>Últimos Alumnos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for alumno in ultimos_alumnos %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ alumno.persona.apellido }}, {{ alumno.persona.nombre }}</h6>
+                                    <small class="text-muted">{{ alumno.curso.materia.nombre }} - {{ alumno.curso.ano }} {{ alumno.curso.division }}</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill">Nuevo</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted mb-0">No hay alumnos registrados</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
 
-          <div class="col-12 col-md-6 col-lg-3">
-              <div class="stat-card p-3">
-                  <div class="d-flex justify-content-between align-items-center">
-                      <div>
-                          <h6 class="text-muted mb-2">Total Materias</h6>
-                          <h3 class="mb-0">32</h3>
-                      </div>
-                      <div class="bg-warning bg-opacity-10 p-3 rounded">
-                          <i class="fas fa-book text-warning fa-2x"></i>
-                      </div>
-                  </div>
-              </div>
-          </div>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-book me-2"></i>Últimas Materias</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for materia in ultimas_materias %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ materia.nombre }}</h6>
+                                    <small class="text-muted">{{ materia.colegio.nombre }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted mb-0">No hay materias registradas</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
 
-          <div class="col-12 col-md-6 col-lg-3">
-              <div class="stat-card p-3">
-                  <div class="d-flex justify-content-between align-items-center">
-                      <div>
-                          <h6 class="text-muted mb-2">Cursos Activos</h6>
-                          <h3 class="mb-0">15</h3>
-                      </div>
-                      <div class="bg-info bg-opacity-10 p-3 rounded">
-                          <i class="fas fa-graduation-cap text-info fa-2x"></i>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-file-alt me-2"></i>Últimos Parciales</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for parcial in ultimos_parciales %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ parcial.tema }}</h6>
+                                    <small class="text-muted">
+                                        {{ parcial.curso.materia.nombre }} - {{ parcial.fecha|date:"d/m/Y" }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted mb-0">No hay parciales registrados</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
 
-      <!-- Recent Activity -->
-      <div class="row">
-          <div class="col-12 col-lg-8 mb-4">
-              <div class="card">
-                  <div class="card-header">
-                      <h5 class="card-title mb-0">Actividad Reciente</h5>
-                  </div>
-                  <div class="card-body">
-                      <div class="list-group list-group-flush">
-                          <div class="list-group-item">
-                              <div class="d-flex align-items-center">
-                                  <i class="fas fa-user-plus me-3 text-primary"></i>
-                                  <div>
-                                      <p class="mb-0">Nuevo alumno registrado</p>
-                                      <small class="text-muted">Hace 2 horas</small>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="list-group-item">
-                              <div class="d-flex align-items-center">
-                                  <i class="fas fa-book-open me-3 text-success"></i>
-                                  <div>
-                                      <p class="mb-0">Nueva materia agregada</p>
-                                      <small class="text-muted">Hace 4 horas</small>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="list-group-item">
-                              <div class="d-flex align-items-center">
-                                  <i class="fas fa-edit me-3 text-warning"></i>
-                                  <div>
-                                      <p class="mb-0">Actualización de notas</p>
-                                      <small class="text-muted">Hace 6 horas</small>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-
-          <div class="col-12 col-lg-4 mb-4">
-              <div class="card">
-                  <div class="card-header">
-                      <h5 class="card-title mb-0">Próximos Eventos</h5>
-                  </div>
-                  <div class="card-body">
-                      <div class="list-group list-group-flush">
-                          <div class="list-group-item">
-                              <h6 class="mb-1">Reunión de Profesores</h6>
-                              <small class="text-muted">
-                                  <i class="fas fa-calendar me-2"></i>
-                                  Mañana - 10:00 AM
-                              </small>
-                          </div>
-                          <div class="list-group-item">
-                              <h6 class="mb-1">Entrega de Notas</h6>
-                              <small class="text-muted">
-                                  <i class="fas fa-calendar me-2"></i>
-                                  En 3 días
-                              </small>
-                          </div>
-                          <div class="list-group-item">
-                              <h6 class="mb-1">Inicio de Inscripciones</h6>
-                              <small class="text-muted">
-                                  <i class="fas fa-calendar me-2"></i>
-                                  La próxima semana
-                              </small>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-chalkboard me-2"></i>Últimos Cursos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for curso in ultimos_cursos %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ curso.ano }} {{ curso.division }}</h6>
+                                    <small class="text-muted">{{ curso.materia.nombre }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted mb-0">No hay cursos registrados</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

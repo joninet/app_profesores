@@ -6,9 +6,11 @@ from django.db import IntegrityError
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from ..models import Colegio, AnoLectivo
-
 from ..forms import ColegioForm, AnoLectivoForm, MateriaForm, CustomAuthenticationForm
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from ..models import Alumno, Materia, Parcial, Curso, Evento, AnoLectivo, Colegio
+from datetime import datetime
 #Login
 def signup(request):
     if request.method == 'GET':
@@ -57,15 +59,55 @@ def signin(request):
             "error": "Usuario o contraseña incorrectos"
         })
 
+@login_required
 def home(request):
-    try:
-        ano_lectivo_id = request.session.get('ano_lectivo_id')
-        if not ano_lectivo_id:
-            return redirect('signin')  # Redirigir al inicio de sesión si no hay año lectivo en la sesión
-
-        ano_lectivo = AnoLectivo.objects.get(id=ano_lectivo_id)
-    except AnoLectivo.DoesNotExist:
-        return render(request, 'error.html', {'message': 'Año lectivo no encontrado.'})
-
-    anos_lectivos = AnoLectivo.objects.all()
-    return render(request, 'home.html', {'ano_lectivo': ano_lectivo, 'anos_lectivos': anos_lectivos})
+    ano_lectivo_id = request.session.get('ano_lectivo_id')
+    
+    # Verificar que existe el año lectivo
+    if not ano_lectivo_id:
+        return render(request, 'home.html', {
+            'error': 'Debe seleccionar un año lectivo'
+        })
+    
+    # Obtener últimos 5 registros de cada modelo
+    ultimos_alumnos = Alumno.objects.filter(
+        user=request.user,
+        ano_lectivo_id=ano_lectivo_id
+    ).select_related('persona', 'curso', 'curso__materia').order_by('-id')[:5]
+    
+    ultimas_materias = Materia.objects.filter(
+        user=request.user
+    ).select_related('colegio').order_by('-id')[:5]
+    
+    ultimos_parciales = Parcial.objects.filter(
+        user=request.user,
+        ano_lectivo_id=ano_lectivo_id
+    ).select_related('curso__materia').order_by('-fecha')[:5]
+    
+    ultimos_cursos = Curso.objects.filter(
+        user=request.user,
+        ano_lectivo_id=ano_lectivo_id
+    ).select_related('materia').order_by('-id')[:5]
+    
+    proximos_eventos = Evento.objects.filter(
+        user=request.user,
+        ano_lectivo_id=ano_lectivo_id,
+    ).order_by('fecha')[:5]
+    
+    # Imprimir para debug
+    print(f"Año lectivo: {ano_lectivo_id}")
+    print(f"Alumnos: {ultimos_alumnos.count()}")
+    print(f"Materias: {ultimas_materias.count()}")
+    print(f"Parciales: {ultimos_parciales.count()}")
+    print(f"Cursos: {ultimos_cursos.count()}")
+    print(f"Eventos: {proximos_eventos.count()}")
+    
+    context = {
+        'ultimos_alumnos': ultimos_alumnos,
+        'ultimas_materias': ultimas_materias,
+        'ultimos_parciales': ultimos_parciales,
+        'ultimos_cursos': ultimos_cursos,
+        'proximos_eventos': proximos_eventos,
+    }
+    
+    return render(request, 'home.html', context)
