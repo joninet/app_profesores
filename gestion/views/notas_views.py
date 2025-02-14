@@ -1,10 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.core.mail import get_connection, EmailMessage
-from ..models import Nota, Parcial, Alumno, ConfiguracionEmail
-from .email_views import enviar_email, configuracion_email
-from ..forms import NotaForm, ConfiguracionEmailForm
+from ..models import Nota, Parcial, Alumno
+from ..forms import NotaForm
 import json
 from django.core.mail import send_mail
 
@@ -32,78 +30,63 @@ def registrar_notas(request, parcial_id):
     
     notas_data = []
     notas_list = []
-    action = request.POST.get('action')
     
-    # Procesar formulario POST
-    if request.method == 'POST' and action == 'save':
-        for alumno in alumnos:
-            nota_value = request.POST.get(f'nota_{alumno.id}')
-            if nota_value:
-                try:
-                    nota_value = float(nota_value)
-                    if 0 <= nota_value <= 10:
-                        nota_obj, created = Nota.objects.update_or_create(
-                            alumno=alumno,
-                            parcial=parcial,
-                            user=request.user,
-                            defaults={'nota': nota_value}
-                        )
-                        notas_list.append(nota_obj)
-                    else:
-                        messages.error(request, f'La nota debe estar entre 0 y 10 para {alumno.persona.nombre}')
-                except ValueError:
-                    messages.error(request, f'Nota inválida para {alumno.persona.nombre}')
-        
-        if notas_list:
-            messages.success(request, 'Notas guardadas correctamente')
-        return redirect('registrar_notas', parcial_id=parcial_id)
-    
-    # Procesar envío de email
-    elif request.method == 'POST' and action == 'send_email':
-        alumno_id = request.POST.get('alumno_id')
-        alumno = get_object_or_404(Alumno, id=alumno_id)
-        nota_obj = get_object_or_404(Nota, alumno=alumno, parcial=parcial)
-        
-        try:
-            config = ConfiguracionEmail.objects.get(user=request.user)
-            
-            # Preparar y enviar email
-            subject = f"Nota de {parcial.curso.materia} - {parcial.tema}"
-            message = f"""
-            Estimado/a {alumno.persona.nombre} {alumno.persona.apellido},
-            
-            Su nota para {parcial.tema} de {parcial.curso.materia} es: {nota_obj.nota}
-            
-            Saludos cordiales,
-            {request.user.get_full_name()}
-            """
-            
-            if enviar_email(request.user, subject, message, alumno.persona.email):
-                messages.success(request, f'Email enviado correctamente a {alumno.persona.nombre}')
-            else:
-                messages.error(request, 'Error al enviar el email')
-                
-        except ConfiguracionEmail.DoesNotExist:
-            messages.error(request, 'Debe configurar su email primero')
-        
-        return redirect('registrar_notas', parcial_id=parcial_id)
-    
-    # Preparar datos para mostrar
     for alumno in alumnos:
         nota_obj, _ = Nota.objects.get_or_create(
             alumno=alumno,
             parcial=parcial,
             user=request.user,
-            defaults={'nota': None}
+            ano_lectivo_id=ano_lectivo_id,
+            defaults={'nota': 0}
         )
         notas_data.append({
             'alumno': alumno,
             'nota': nota_obj,
-            'tiene_email': bool(alumno.persona.email)
+            'form': NotaForm(instance=nota_obj, prefix=str(alumno.id))
         })
+        notas_list.append(float(nota_obj.nota))
     
+    promedio_general = sum(notas_list) / len(notas_list) if notas_list else 0.0
+    
+    if request.method == 'POST':
+        alumno_id = request.POST.get('alumno_id')
+        action = request.POST.get('action')
+        alumno = get_object_or_404(Alumno, id=alumno_id)
+        nota_obj = get_object_or_404(Nota, alumno=alumno, parcial=parcial)
+        form = NotaForm(request.POST, instance=nota_obj, prefix=str(alumno_id))
+        
+        if action == 'update':
+            if form.is_valid():
+                n = form.save(commit=False)
+                n.user = request.user
+                n.ano_lectivo_id = ano_lectivo_id
+                n.save()
+                messages.success(request, 'Nota actualizada correctamente.')
+        elif action == 'send_email':
+            email_destino = alumno.persona.email
+            asunto = f"Nota de {alumno.persona.nombre} {alumno.persona.apellido}"
+            mensaje = f"Hola {alumno.persona.nombre}, tu nota es: {nota_obj.nota}"
+            if email_destino:
+                send_mail(
+                    asunto,
+                    mensaje,
+                    'no-reply@tu-dominio.com',
+                    [email_destino],
+                    fail_silently=False,
+                )
+                messages.success(request, 'Correo enviado correctamente.')
+            else:
+                messages.warning(request, 'El alumno no tiene un correo registrado.')
+        
+        return redirect('registrar_notas', parcial_id=parcial_id)
+
+    # 🔹 Limpia los mensajes ANTES de renderizar la plantilla
+    storage = messages.get_messages(request)
+    storage.used = True
+
     return render(request, 'nota/registrar_notas.html', {
         'parcial': parcial,
         'notas_data': notas_data,
-        'tiene_config_email': ConfiguracionEmail.objects.filter(user=request.user).exists()
+        'promedio_general': promedio_general,
+        'notas_list': notas_list  # Pasa la lista de notas al contexto
     })
